@@ -1,0 +1,33 @@
+{
+  "name": "vef2-2018-h1",
+  "version": "1.0.0",
+  "description": "Útfæra skal vefþjónustu fyrir „bókasafn“ með notendaumsjón. Gefin eru gögn fyrir bækur og flokka.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "eslint": "eslint *.js **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devonpatty/hv1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devonpatty/hv1/issues"
+  },
+  "homepage": "https://github.com/devonpatty/hv1#readme",
+  "devDependencies": {
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  },
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "express": "^4.16.2",
+    "path": "^0.12.7",
+    "pg": "^7.4.1",
+    "xss": "^0.3.7"
+  }
+}
