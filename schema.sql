@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users(
+CREATE TABLE IF NOT EXISTS users (
     userId          serial primary key,
     username        varchar(65) CHECK (char_length(username) >= 3) UNIQUE NOT NULL,
     password        varchar(255) CHECK (char_length(password) >= 6) NOT NULL,
@@ -6,12 +6,12 @@ CREATE TABLE IF NOT EXISTS users(
     url             text
 );
 
-CREATE TABLE IF NOT EXISTS categories(
+CREATE TABLE IF NOT EXISTS categories (
     cateId          serial primary key,
     name            varchar(65) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS books(
+CREATE TABLE IF NOT EXISTS books (
     bookId          serial primary key,
     title           varchar(100) UNIQUE NOT NULL,
     isbn13          varchar(13) CHECK (char_length(isbn13) = 13) UNIQUE NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS books(
     FOREIGN KEY (category) REFERENCES categories(cateId)
 );
 
-CREATE TABLE IF NOT EXISTS readbook(
+CREATE TABLE IF NOT EXISTS readbook (
     id              serial,
     userId          int NOT NULL,
     bookId          int NOT NULL,
