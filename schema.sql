@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS books (
     category        int NOT NULL,
     isbn10          varchar(10),
     releasedate     varchar(25),
-    page            int,        
+    pagecount       int,        
     language        varchar(2),
     FOREIGN KEY (category) REFERENCES categories(cateId)
 );
