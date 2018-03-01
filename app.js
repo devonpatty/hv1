@@ -1,9 +1,10 @@
 require('dotenv').config();
 const express = require('express');
-
+const book = require('./book.js');
 const app = express();
 
 app.use(express.json());
+app.use('/', book);
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).json({ error: 'Not found' });
