@@ -2,7 +2,14 @@ require('dotenv').config();
 
 const csvdata = require('csvdata');
 const express = require('express');
-const { Client } = require('pg');
+const {
+  getBooks,
+  insertCategory,
+  insertBooks,
+  searchBook,
+} = require('./helper.js');
+
+const { replaceSlash } = require('./util.js');
 
 const router = express.Router();
 
@@ -10,56 +17,56 @@ const { port } = process.env;
 
 const booksPath = './data/books.csv';
 
-const connectionString = process.env.DATABASE_URL;
-
-async function query(q, values = []) {
-  const client = new Client({ connectionString });
-  await client.connect();
-
-  let result;
-
-  try {
-    result = await client.query(q, values);
-  } catch (err) {
-    throw err;
-  } finally {
-    await client.end();
-  }
-
-  return result;
+function catchErrors(fn) {
+  return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-const getBooks = offset => new Promise(async (resolve) => {
-  const q = 'SELECT * FROM books ORDER BY bookid LIMIT 10 OFFSET $1';
-
-  const result = await query(q, [offset]);
-  if (result) {
-    return resolve(result.rows);
+async function makeLink(data, offset, limit, search) {
+  const searched = {
+    links: {
+      self: {
+        href: `http://localhost:${port}/books?search=${search}&offset=${offset}&limit=${limit}`,
+      },
+    },
+    limit,
+    offset,
+    items: await replaceSlash(data),
+  };
+  if (offset > 0) {
+    searched.links.prev = {
+      href: `http://localhost:${port}/books?search=${search}&offset=${offset - limit}&limit=${limit}`,
+    };
   }
-  return resolve(null);
-});
-
-async function insertCategory(category) {
-  const q = 'INSERT INTO categories (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name=$1 RETURNING *';
-  const result = await query(q, [category]);
-  return result.rows;
+  if (searched.items.length <= limit) {
+    searched.links.next = {
+      href: `http://localhost:${port}/books?search=${search}&offset=${offset + limit}&limit=${limit}`,
+    };
+  }
+  return searched;
 }
 
-async function insertBooks(title, isbn13, author, description, category, isbn10, published, pagecount, language) {
-  const q = 'INSERT INTO books (title, isbn13, author, description, category, isbn10, published, pagecount, language) '
-          + 'VALUES($1, $2, $3, $4, (SELECT cateid FROM categories WHERE categories.name=$5), $6, $7, $8, $9) '
-          + 'RETURNING *';
-  const result = await query(q, [title, isbn13, author, description, category, isbn10, published, pagecount, language]);
-  return result.rows;
-}
-
-async function replaceSlash(arr) {
-  const books = arr;
-  for (let i = 0; i !== books.length; i += 1) {
-    const str = books[i].description.replace(/[\\"]/g, '');
-    books[i].description = str;
+async function allBookLink(data, offset, limit) {
+  const searched = {
+    links: {
+      self: {
+        href: `http://localhost:${port}/books?offset=${offset}&limit=${limit}`,
+      },
+    },
+    limit,
+    offset,
+    items: await replaceSlash(data),
+  };
+  if (offset > 0) {
+    searched.links.prev = {
+      href: `http://localhost:${port}/books?offset=${offset - limit}&limit=${limit}`,
+    };
   }
-  return books;
+  if (searched.items.length <= limit) {
+    searched.links.next = {
+      href: `http://localhost:${port}/books?offset=${offset + limit}&limit=${limit}`,
+    };
+  }
+  return searched;
 }
 
 router.get('/csv', (req, res) => {
@@ -86,38 +93,19 @@ router.get('/csv', (req, res) => {
     .catch(err => console.warn(err));
 });
 
-router.get('/book', async (req, res) => {
-  let { offset = 0, limit = 10 } = req.query;
+router.get('/books', async (req, res) => {
+  let { offset = 0, limit = 10, search } = req.query;
   offset = Number(offset);
   limit = Number(limit);
-  await getBooks(offset)
-    .then(async (data) => {
-      const books = {
-        links: {
-          self: {
-            href: `http://localhost:${port}/book?offset=${offset}&limit=${limit}`,
-          },
-        },
-        limit,
-        offset,
-        items: await replaceSlash(data),
-      };
-
-      if (offset > 0) {
-        books.links['prev'] = {
-          href: `http://localhost:${port}/book?offset=${offset-limit}&limit=${limit}`,
-        };
-      }
-  
-      if (books.items.length <= limit) {
-        books.links['next'] = {
-          href: `http://localhost:${port}/book?offset=${Number(offset)+limit}&limit=${limit}`,
-        };
-      }
-
-      res.status(200).json(books);
-    })
-    .catch(() => res.status(404).json({ error: 'Not found' }));
+  if (search) {
+    const searchedBook = await searchBook(search, offset);
+    const data = await makeLink(searchedBook, offset, limit, search);
+    res.status(200).json(data);
+  } else {
+    const findBook = await getBooks(offset);
+    const books = await allBookLink(findBook, offset, limit);
+    res.status(200).json(books);
+  }
 });
 
 module.exports = router;
