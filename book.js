@@ -7,6 +7,11 @@ const {
   insertCategory,
   insertBooks,
   searchBook,
+  readOne,
+  updateOne,
+  createBook,
+  getCategories,
+  createCategory,
 } = require('./helper.js');
 
 const { replaceSlash } = require('./util.js');
@@ -106,6 +111,62 @@ router.get('/books', async (req, res) => {
     const books = await allBookLink(findBook, offset, limit);
     res.status(200).json(books);
   }
+});
+
+
+
+router.get('/books/:id', async (req, res) => {
+  const { id } = req.params;
+  const book = await readOne(id);
+  res.status(200).json(book);
+});
+
+router.get('/categories', async (req, res) => {
+  const category = await getCategories();
+  res.status(200).json(category);
+});
+
+router.post('/categories', async (req, res) => {
+  const { name } = req.body;
+  const category = await createCategory(name);
+  res.status(200).json(category);
+});
+
+//  Virkar ekki. Vesen með req.body. Skilar undefined eða null
+router.post('/books', async (req, res) => {
+  const {
+    title,
+    isbn13,
+    author,
+    description,
+    category,
+    isbn10,
+    published,
+    pagecount,
+    language
+  } = req.body;
+  const book = createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language);
+  res.status(200).json(book);
+});
+
+
+//  Virkar ekki. Vesen með req.body. Skilar undefined eða null
+router.patch('/books/:id', async (req, res) => {
+  const { id } = req.params;
+  const {
+    title,
+    isbn13,
+    author,
+    description,
+    category,
+    isbn10,
+    published,
+    pagecount,
+    language
+  } = req.body;
+
+  const book = await updateOne(id, title, isbn13, author, description, category, isbn10, published, pagecount, language);
+  res.status(200).json(book);
 });
 
 module.exports = router;
