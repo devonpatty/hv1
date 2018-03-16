@@ -129,6 +129,7 @@ router.get('/categories', async (req, res) => {
 router.post('/categories', async (req, res) => {
   const { name } = req.body;
   const category = await createCategory(name);
+  console.info(category);
   res.status(200).json(category);
 });
 
@@ -143,9 +144,9 @@ router.post('/books', async (req, res) => {
     isbn10,
     published,
     pagecount,
-    language
+    language,
   } = req.body;
-  const book = createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language);
+  const book = await createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language);
   res.status(200).json(book);
 });
 
@@ -162,7 +163,7 @@ router.patch('/books/:id', async (req, res) => {
     isbn10,
     published,
     pagecount,
-    language
+    language,
   } = req.body;
 
   const book = await updateOne(id, title, isbn13, author, description, category, isbn10, published, pagecount, language);

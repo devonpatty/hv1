@@ -50,32 +50,34 @@ async function readOne(id) {
 }
 
 async function updateOne(bookid, title, isbn13, author, description, category, isbn10, published, pagecount, language) {
-  const a = 'UPDATE books SET title = $1, isbn13 = $2, author = $3, description = $4, category = $5, isbn10 = $6, published = $7, pagecount = $8, language = $9 WHERE bookId = $10 RETURNING *';
+  const a = 'UPDATE books SET title=$1, isbn13=$2, author=$3, description=$4, category=$5, isbn10=$6, published=$7, pagecount=$8, language=$9 '
+          + 'WHERE bookId = $10 RETURNING *';
   const values = [title, isbn13, author, description, category, isbn10, published, pagecount, language, bookid];
   
   const result = await query(a, values);
   
-  return result.row;
+  return result.rows;
 }
 
 async function createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language) {
-  const a = 'insert into books(title, isbn13, author, description, category, isbn10, publised, pagecount, language) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
+  const a = 'INSERT INTO books(title, isbn13, author, description, category, isbn10, published, pagecount, language) '
+          + 'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
   const values = [title, isbn13, author, description, category, isbn10, published, pagecount, language];
 
   const result = await query(a, values);
-  return result.row;
+  return result.rows;
 }
 
-async function getCategories(){
+async function getCategories() {
   const a = 'SELECT * FROM categories';
-  const result = await query(a, []);
+  const result = await query(a);
   return result.rows;
 }
 
 async function createCategory(name) {
-  const a = 'INSERT INTO categories(name) VALUES($1) RETURNING *'
-  const result = await query(a,[name]);
-  return result.row;
+  const a = 'INSERT INTO categories(name) VALUES($1) RETURNING *';
+  const result = await query(a, [name]);
+  return result.rows;
 }
 
 module.exports = {
