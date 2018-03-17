@@ -18,12 +18,6 @@ async function query(q, values = []) {
   return result;
 }
 
-async function findByUsername(username) {
-  const a = 'SELECT username, password FROM users WHERE username = ($1)';
-  const results = await query(a, [username]);
-  return results.rows;
-}
-
 async function getBooks(offset) {
   const q = 'SELECT * FROM books ORDER BY bookid LIMIT 10 OFFSET $1';
   const result = await query(q, [offset]);

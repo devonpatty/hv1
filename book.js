@@ -77,7 +77,7 @@ async function allBookLink(data, offset, limit) {
   return searched;
 }
 
-router.get('/csv', (req, res) => {
+async function csv(req, res) {
   csvdata.load(booksPath, { delimiter: ',' })
     .then((result) => {
       Promise.all(result)
@@ -101,26 +101,26 @@ router.get('/csv', (req, res) => {
       res.status(200).json(result);
     })
     .catch(err => console.warn(err));
-});
+}
 
-router.post('/register', async (req, res) => {
+async function register(req, res) {
   const { username, password, name } = req.body;
   const results = await createUser(username, password, name);
   res.status(200).json(results);
-});
+}
 
-router.get('/users', async (req, res) => {
+async function users(req, res) {
   const results = await getUsers();
   res.status(200).json(results);
-});
+}
 
-router.get('/users/:id', async (req, res) => {
+async function usersId(req, res) {
   const { id } = req.params;
   const results = await getUserById(id);
   res.status(200).json(results);
-});
+}
 
-router.get('/books', async (req, res) => {
+async function books(req, res) {
   let { offset = 0, limit = 10, search } = req.query;
   offset = Number(offset);
   limit = Number(limit);
@@ -130,29 +130,29 @@ router.get('/books', async (req, res) => {
     res.status(200).json(data);
   } else {
     const findBook = await getBooks(offset);
-    const books = await allBookLink(findBook, offset, limit);
-    res.status(200).json(books);
+    const book = await allBookLink(findBook, offset, limit);
+    res.status(200).json(book);
   }
-});
+}
 
-router.get('/books/:id', async (req, res) => {
+async function booksId(req, res) {
   const { id } = req.params;
   const book = await readOne(id);
   res.status(200).json(book);
-});
+}
 
-router.get('/categories', async (req, res) => {
+async function categories(req, res) {
   const category = await getCategories();
   res.status(200).json(category);
-});
+}
 
-router.post('/categories', async (req, res) => {
+async function categoriesPost(req, res) {
   const { name } = req.body;
   const category = await createCategory(name);
   res.status(200).json(category);
-});
+}
 
-router.post('/books', async (req, res) => {
+async function booksPost(req, res) {
   const {
     title,
     isbn13,
@@ -166,9 +166,9 @@ router.post('/books', async (req, res) => {
   } = req.body;
   const book = createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language);
   res.status(200).json(book);
-});
+}
 
-router.patch('/books/:id', async (req, res) => {
+async function booksIdUpdate(req, res) {
   const { id } = req.params;
   const {
     title,
@@ -184,6 +184,18 @@ router.patch('/books/:id', async (req, res) => {
 
   const book = await updateOne(id, title, isbn13, author, description, category, isbn10, published, pagecount, language);
   res.status(200).json(book);
-});
+}
+
+router.get('/csv', catchErrors(csv));
+router.post('/register', catchErrors(register));
+router.get('/user', catchErrors(users));
+router.get('/users/:id', catchErrors(usersId));
+router.get('/books', catchErrors(books));
+router.get('/books/:id', catchErrors(booksId));
+router.get('/categories', catchErrors(categories));
+router.post('/categories', catchErrors(categoriesPost));
+router.post('/books', catchErrors(booksPost));
+router.patch('/books/:id', catchErrors(booksIdUpdate));
+
 
 module.exports = router;
