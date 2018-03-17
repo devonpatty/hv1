@@ -12,6 +12,9 @@ const {
   createBook,
   getCategories,
   createCategory,
+  createUser,
+  getUsers,
+  getUserById,
 } = require('./helper.js');
 
 const { replaceSlash } = require('./util.js');
@@ -81,11 +84,13 @@ router.get('/csv', (req, res) => {
         .then(async (data) => {
           const startTime = Math.floor(new Date().getTime() / 1000);
           for (let i = 0; i !== data.length; i += 1) {
-            await insertCategory(data[i].category);
+            await insertCategory(data[i].category); //eslint-disable-line
           }
           for (let j = 0; j !== data.length; j += 1) {
-            await insertBooks(data[j].title, data[j].isbn13, data[j].author, data[j].description,
-              data[j].category, data[j].isbn10, data[j].published, data[j].pagecount, data[j].language);
+            await insertBooks( data[j].title, data[j].isbn13, data[j].author, data[j].description, // eslint-disable-line
+              data[j].category, data[j].isbn10, data[j]
+                .published, data[j].pagecount, data[j].language,
+            );
           }
           const endTime = Math.floor(new Date().getTime() / 1000);
           const elapsedTime = endTime - startTime;
@@ -96,6 +101,23 @@ router.get('/csv', (req, res) => {
       res.status(200).json(result);
     })
     .catch(err => console.warn(err));
+});
+
+router.post('/register', async (req, res) => {
+  const { username, password, name } = req.body;
+  const results = await createUser(username, password, name);
+  res.status(200).json(results);
+});
+
+router.get('/users', async (req, res) => {
+  const results = await getUsers();
+  res.status(200).json(results);
+});
+
+router.get('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const results = await getUserById(id);
+  res.status(200).json(results);
 });
 
 router.get('/books', async (req, res) => {
@@ -113,8 +135,6 @@ router.get('/books', async (req, res) => {
   }
 });
 
-
-
 router.get('/books/:id', async (req, res) => {
   const { id } = req.params;
   const book = await readOne(id);
@@ -129,11 +149,9 @@ router.get('/categories', async (req, res) => {
 router.post('/categories', async (req, res) => {
   const { name } = req.body;
   const category = await createCategory(name);
-  console.info(category);
   res.status(200).json(category);
 });
 
-//  Virkar ekki. Vesen með req.body. Skilar undefined eða null
 router.post('/books', async (req, res) => {
   const {
     title,
@@ -146,12 +164,10 @@ router.post('/books', async (req, res) => {
     pagecount,
     language,
   } = req.body;
-  const book = await createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language);
+  const book = createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language);
   res.status(200).json(book);
 });
 
-
-//  Virkar ekki. Vesen með req.body. Skilar undefined eða null
 router.patch('/books/:id', async (req, res) => {
   const { id } = req.params;
   const {

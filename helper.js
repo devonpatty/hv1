@@ -5,6 +5,7 @@ const connectionString = process.env.DATABASE_URL;
 
 async function query(q, values = []) {
   const client = new Client({ connectionString });
+
   await client.connect();
   let result;
   try {
@@ -15,6 +16,12 @@ async function query(q, values = []) {
     await client.end();
   }
   return result;
+}
+
+async function findByUsername(username) {
+  const a = 'SELECT username, password FROM users WHERE username = ($1)';
+  const results = await query(a, [username]);
+  return results.rows;
 }
 
 async function getBooks(offset) {
@@ -53,9 +60,9 @@ async function updateOne(bookid, title, isbn13, author, description, category, i
   const a = 'UPDATE books SET title=$1, isbn13=$2, author=$3, description=$4, category=$5, isbn10=$6, published=$7, pagecount=$8, language=$9 '
           + 'WHERE bookId = $10 RETURNING *';
   const values = [title, isbn13, author, description, category, isbn10, published, pagecount, language, bookid];
-  
+
   const result = await query(a, values);
-  
+
   return result.rows;
 }
 
@@ -80,6 +87,24 @@ async function createCategory(name) {
   return result.rows;
 }
 
+async function createUser(username, password, name) {
+  const a = 'INSERT INTO users(username, password, name) VALUES($1, $2, $3) RETURNING username';
+  const result = await query(a, [username, password, name]);
+  return result.rows;
+}
+
+async function getUsers() {
+  const a = 'SELECT username FROM users';
+  const results = await query(a);
+  return results.rows;
+}
+
+async function getUserById(id) {
+  const a = 'SELECT username FROM users WHERE userId = ($1)';
+  const results = await query(a, [id]);
+  return results.rows;
+}
+
 module.exports = {
   getBooks,
   insertCategory,
@@ -90,4 +115,7 @@ module.exports = {
   createBook,
   getCategories,
   createCategory,
+  createUser,
+  getUsers,
+  getUserById,
 };
