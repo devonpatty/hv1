@@ -39,7 +39,7 @@ async function findByUsername(username) {
 }
 
 async function findById(id) {
-  const q = 'SELECT * FROM users WHERE id = $1';
+  const q = 'SELECT * FROM users WHERE userId = $1';
 
   const result = await query(q, [id]);
 
@@ -50,12 +50,12 @@ async function findById(id) {
   return null;
 }
 
-async function createUser(username, password) {
+async function createUser(username, password, name, url) {
   const hashedPassword = await bcrypt.hash(password, 11);
 
-  const q = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *';
+  const q = 'INSERT INTO users (username, password, name, url) VALUES ($1, $2, $3, $4) RETURNING *';
 
-  const result = await query(q, [username, hashedPassword]);
+  const result = await query(q, [username, hashedPassword, name, url]);
 
   return result.rows[0];
 }
@@ -65,4 +65,4 @@ module.exports = {
   findByUsername,
   findById,
   createUser,
-}
+};
