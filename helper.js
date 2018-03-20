@@ -5,6 +5,7 @@ const connectionString = process.env.DATABASE_URL;
 
 async function query(q, values = []) {
   const client = new Client({ connectionString });
+
   await client.connect();
   let result;
   try {
@@ -28,7 +29,7 @@ async function insertCategory(category) {
   const result = await query(q, [category]);
   return result.rows;
 }
-  
+
 async function insertBooks(title, isbn13, author, description, category, isbn10, published, pagecount, language) {
   const q = 'INSERT INTO books (title, isbn13, author, description, category, isbn10, published, pagecount, language) '
           + 'VALUES($1, $2, $3, $4, (SELECT cateid FROM categories WHERE categories.name=$5), $6, $7, $8, $9) '
@@ -43,9 +44,72 @@ async function searchBook(val, offset) {
   return result.rows;
 }
 
+async function readOne(id) {
+  const a = 'SELECT * FROM books WHERE bookId = $1';
+  const result = await query(a, [id]);
+  return result.rows;
+}
+
+async function updateOne(bookid, title, isbn13, author, description, category, isbn10, published, pagecount, language) {
+  const a = 'UPDATE books SET title=$1, isbn13=$2, author=$3, description=$4, category=$5, isbn10=$6, published=$7, pagecount=$8, language=$9 '
+          + 'WHERE bookId = $10 RETURNING *';
+  const values = [title, isbn13, author, description, category, isbn10, published, pagecount, language, bookid];
+
+  const result = await query(a, values);
+
+  return result.rows;
+}
+
+async function createBook(title, isbn13, author, description, category, isbn10, published, pagecount, language) {
+  const a = 'INSERT INTO books(title, isbn13, author, description, category, isbn10, published, pagecount, language) '
+          + 'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
+  const values = [title, isbn13, author, description, category, isbn10, published, pagecount, language];
+
+  const result = await query(a, values);
+  return result.rows;
+}
+
+async function getCategories() {
+  const a = 'SELECT * FROM categories';
+  const result = await query(a);
+  return result.rows;
+}
+
+async function createCategory(name) {
+  const a = 'INSERT INTO categories(name) VALUES($1) RETURNING *';
+  const result = await query(a, [name]);
+  return result.rows;
+}
+
+async function createUser(username, password, name) {
+  const a = 'INSERT INTO users(username, password, name) VALUES($1, $2, $3) RETURNING username';
+  const result = await query(a, [username, password, name]);
+  return result.rows;
+}
+
+async function getUsers() {
+  const a = 'SELECT username FROM users';
+  const results = await query(a);
+  return results.rows;
+}
+
+async function getUserById(id) {
+  const a = 'SELECT username FROM users WHERE userId = ($1)';
+  const results = await query(a, [id]);
+  return results.rows;
+}
+
 module.exports = {
   getBooks,
   insertCategory,
   insertBooks,
   searchBook,
+  readOne,
+  updateOne,
+  createBook,
+  getCategories,
+  createCategory,
+  createUser,
+  getUsers,
+  getUserById,
 };
