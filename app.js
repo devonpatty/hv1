@@ -30,7 +30,6 @@ const jwtOptions = {
 
 async function strat(data, next) {
   const user = await users.findById(data.id);
-
   if (user) {
     next(null, user);
   } else {

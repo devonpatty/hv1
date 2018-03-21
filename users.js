@@ -39,7 +39,7 @@ async function findByUsername(username) {
 }
 
 async function findById(id) {
-  const q = 'SELECT * FROM users WHERE userId = $1';
+  const q = 'SELECT * FROM users WHERE id = $1';
 
   const result = await query(q, [id]);
 
