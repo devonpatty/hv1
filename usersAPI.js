@@ -8,6 +8,9 @@ const {
   getUsers,
   getUserById,
   updateProfilePic,
+  updateUser,
+  readById,
+  createReadById,
 } = require('./users');
 
 const uploads = multer({ dest: './temp' });
@@ -73,8 +76,54 @@ async function usersId(req, res) {
   res.status(200).json(results);
 }
 
+async function userMe(req, res) {
+  const { id } = req.user;
+  const results = await getUserById(id);
+  res.status(200).json(results);
+}
+
+async function updateMe(req, res) {
+  const { id } = req.user;
+  const { password, name } = req.body;
+  const results = await updateUser(password, name, id);
+  res.status(200).json(results);
+}
+
+async function readIdGet(req, res) {
+  console.log('123');
+  const { id } = req.params;
+  const results = await readById(id);
+  console.log(results);
+  res.status(200).json(results);
+}
+
+async function meRead(req, res) {
+  const { id } = req.user;
+  const results = await readById(id);
+  res.status(200).json(results);
+}
+
+async function meReadPost(req, res) {
+  const { id } = req.user;
+  const { bookId, star, review } = req.body;
+  const results = await createReadById(id, bookId, star, review);
+  res.status(200).json(results);
+}
+
+async function deleteReadById(req, res) {
+  const { id } = req.params
+}
+
+
 router.post('/register', catchErrors(register));
 router.get('/users', catchErrors(users));
+router.get('/users/me', catchErrors(userMe));
+router.patch('users/me', catchErrors(updateMe));
+router.get('/users/me/read', catchErrors(meRead));
+router.post('/users/me/read', catchErrors(meReadPost));
+router.delete('/users/me/read/:id', catchErrors(deleteReadById));
+router.get('users/:id/read', catchErrors(readIdGet));
 router.get('/users/:id', catchErrors(usersId));
 router.post('/users/me/profile', uploads.single('url'), catchErrors(profilePicture));
+
 module.exports = router;
