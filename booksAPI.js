@@ -63,6 +63,11 @@ async function booksPost(req, res) {
     pagecount,
     language,
   } = req.body;
+  if (isbn13.length !== 13) {
+    res.status(400).json({ error: 'isbn13 þarf að vera 13 stafir' });
+  } else if (title.length === 0) {
+    res.status(400).json({ error: 'title má ekki vera tómt' });
+  }
   const book = createBook(
     title,
     isbn13,
@@ -90,6 +95,11 @@ async function booksIdUpdate(req, res) {
     pagecount,
     language,
   } = req.body;
+  if (isbn13.length !== 13) {
+    res.status(400).json({ error: 'isbn13 þarf að vera 13 stafir' });
+  } else if (title.length === 0) {
+    res.status(400).json({ error: 'title má ekki vera tómt' });
+  }
   const book = await updateOne(
     id,
     title,
