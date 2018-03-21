@@ -7,6 +7,7 @@ const {
   createUser,
   getUsers,
   getUserById,
+  updateProfilePic,
 } = require('./users');
 
 const uploads = multer({ dest: './temp' });
@@ -32,12 +33,17 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
-async function register(req, res, next) {
+async function register(req, res) {
   const {
     username,
     password,
     name,
   } = req.body;
+  const results = await createUser(username, password, name);
+  res.status(200).json(results);
+}
+
+async function profilePicture(req, res, next) {
   const { file: { path } = {} } = req;
   if (!path) {
     res.status(401).json({ error: 'gat ekki lesið mynd' });
@@ -51,8 +57,9 @@ async function register(req, res, next) {
   }
   const { secure_url } = upload;
 
-  const results = await createUser(username, password, name, secure_url);
-  res.status(200).json(results);
+  const { id } = req.user;
+  await updateProfilePic(id, secure_url);
+  res.status(200).json({ secure_url });
 }
 
 async function users(req, res) {
@@ -66,8 +73,8 @@ async function usersId(req, res) {
   res.status(200).json(results);
 }
 
-router.post('/register', uploads.single('url'), catchErrors(register));
+router.post('/register', catchErrors(register));
 router.get('/users', catchErrors(users));
 router.get('/users/:id', catchErrors(usersId));
-
+router.post('/users/me/profile', uploads.single('url'), catchErrors(profilePicture));
 module.exports = router;

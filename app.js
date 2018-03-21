@@ -10,7 +10,7 @@ const usersApi = require('./usersAPI');
 const users = require('./users');
 const codata = require('./csv');
 
-const tokenLifetime = 1000;
+const tokenLifetime = 20000;
 const {
   PORT: port = 3000,
   HOST: host = '127.0.0.1',
@@ -43,10 +43,6 @@ async function strat(data, next) {
 passport.use(new Strategy(jwtOptions, strat));
 
 app.use(passport.initialize());
-
-app.use('/', booksApi);
-app.use('/', usersApi);
-app.use('/csv', codata);
 
 app.post('/login', async (req, res) => {
   const {
@@ -89,6 +85,10 @@ function requireAuthentication(req, res, next) {
     },
   )(req, res, next);
 }
+
+app.use('/', booksApi);
+app.use('/', requireAuthentication, usersApi);
+app.use('/csv', codata);
 
 app.get('/admin', requireAuthentication, (req, res) => {
   res.json({ data: 'top secret' });

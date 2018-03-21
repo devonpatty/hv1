@@ -11,7 +11,7 @@ async function singleLink(data, offset, limit, search, port) {
   const searched = {
     links: {
       self: {
-        href: `http://localhost:${port}/books?search=${search}&offset=${offset}&limit=${limit}`,
+        href: `http://djbook.herokuapp.com/books?search=${search}&offset=${offset}&limit=${limit}`,
       },
     },
     limit,
@@ -20,12 +20,12 @@ async function singleLink(data, offset, limit, search, port) {
   };
   if (offset > 0) {
     searched.links.prev = {
-      href: `http://localhost:${port}/books?search=${search}&offset=${offset - limit}&limit=${limit}`,
+      href: `http://djbook.herokuapp.com/books?search=${search}&offset=${offset - limit}&limit=${limit}`,
     };
   }
   if (searched.items.length <= limit) {
     searched.links.next = {
-      href: `http://localhost:${port}/books?search=${search}&offset=${offset + limit}&limit=${limit}`,
+      href: `http://djbook.herokuapp.com/books?search=${search}&offset=${offset + limit}&limit=${limit}`,
     };
   }
   return searched;
@@ -35,7 +35,7 @@ async function manyLink(data, offset, limit, port) {
   const searched = {
     links: {
       self: {
-        href: `http://localhost:${port}/books?offset=${offset}&limit=${limit}`,
+        href: `http://djbook.herokuapp.com/books?offset=${offset}&limit=${limit}`,
       },
     },
     limit,
@@ -44,12 +44,12 @@ async function manyLink(data, offset, limit, port) {
   };
   if (offset > 0) {
     searched.links.prev = {
-      href: `http://localhost:${port}/books?offset=${offset - limit}&limit=${limit}`,
+      href: `http://djbook.herokuapp.com/books?offset=${offset - limit}&limit=${limit}`,
     };
   }
   if (searched.items.length <= limit) {
     searched.links.next = {
-      href: `http://localhost:${port}/books?offset=${offset + limit}&limit=${limit}`,
+      href: `http://djbook.herokuapp.com/books?offset=${offset + limit}&limit=${limit}`,
     };
   }
   return searched;
