@@ -8,6 +8,7 @@ const { Strategy, ExtractJwt } = require('passport-jwt');
 const booksApi = require('./booksAPI');
 const usersApi = require('./usersAPI');
 const users = require('./users');
+const codata = require('./csv');
 
 const tokenLifetime = 1000;
 const {
@@ -45,6 +46,7 @@ app.use(passport.initialize());
 
 app.use('/', booksApi);
 app.use('/', usersApi);
+app.use('/csv', codata);
 
 app.post('/login', async (req, res) => {
   const {

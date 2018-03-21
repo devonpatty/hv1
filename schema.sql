@@ -31,6 +31,6 @@ CREATE TABLE IF NOT EXISTS readbook (
     bookId          int NOT NULL,
     star            smallint CHECK (star >= 1 AND star <= 5) NOT NULL,
     review            text,
-    FOREIGN KEY (userId) REFERENCES users(userId),
+    FOREIGN KEY (userId) REFERENCES users(Id),
     FOREIGN KEY (bookId) REFERENCES books(bookId)
 );
