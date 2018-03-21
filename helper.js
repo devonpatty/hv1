@@ -94,7 +94,7 @@ async function getUsers() {
 }
 
 async function getUserById(id) {
-  const a = 'SELECT username FROM users WHERE userId = ($1)';
+  const a = 'SELECT username FROM users WHERE id = ($1)';
   const results = await query(a, [id]);
   return results.rows;
 }
