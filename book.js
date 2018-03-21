@@ -25,6 +25,8 @@ const { port } = process.env;
 
 const booksPath = './data/books.csv';
 
+router.get('/', (req, res) => {
+
 function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
@@ -78,6 +80,7 @@ async function allBookLink(data, offset, limit) {
 }
 
 async function csv(req, res) {
+
   csvdata.load(booksPath, { delimiter: ',' })
     .then((result) => {
       Promise.all(result)
@@ -99,6 +102,8 @@ async function csv(req, res) {
         .then(timer => console.info(`Imported data from .csv took: ${timer} seconds , the data has been added successfully`))
         .catch(err => console.warn(err));
       res.status(200).json(result);
+    });
+});
     })
     .catch(err => console.warn(err));
 }
@@ -196,6 +201,5 @@ router.get('/categories', catchErrors(categories));
 router.post('/categories', catchErrors(categoriesPost));
 router.post('/books', catchErrors(booksPost));
 router.patch('/books/:id', catchErrors(booksIdUpdate));
-
 
 module.exports = router;
