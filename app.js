@@ -108,6 +108,19 @@ function errorHandler(err, req, res, next) { // eslint-disable-line
   return res.status(500).json({ error: 'Internal server error' });
 }
 
+app.get('/', (req, res) => {
+  res.json({
+    register: '/register',
+    login: '/login',
+    user: '/users',
+    me: '/users/me',
+    profile: '/users/me/profile',
+    categories: '/categories',
+    books: '/books',
+    read: '/users/me/read',
+  });
+});
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 

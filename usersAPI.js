@@ -11,6 +11,7 @@ const {
   updateUser,
   readById,
   createReadById,
+  deleteReadById,
 } = require('./users');
 
 const uploads = multer({ dest: './temp' });
@@ -110,19 +111,22 @@ async function meReadPost(req, res) {
   res.status(200).json(results);
 }
 
-async function deleteReadById(req, res) {
-  const { id } = req.params
+async function deleteRead(req, res) {
+  const { bookId } = req.params;
+  const { userId } = req.user;
+  const results = await deleteReadById(userId, bookId);
+  res.status(200).json(results);
 }
 
 
 router.post('/register', catchErrors(register));
 router.get('/users', catchErrors(users));
 router.get('/users/me', catchErrors(userMe));
-router.patch('users/me', catchErrors(updateMe));
+router.patch('/users/me', catchErrors(updateMe));
 router.get('/users/me/read', catchErrors(meRead));
 router.post('/users/me/read', catchErrors(meReadPost));
-router.delete('/users/me/read/:id', catchErrors(deleteReadById));
-router.get('users/:id/read', catchErrors(readIdGet));
+router.delete('/users/me/read/:id', catchErrors(deleteRead));
+router.get('/users/:id/read', catchErrors(readIdGet));
 router.get('/users/:id', catchErrors(usersId));
 router.post('/users/me/profile', uploads.single('url'), catchErrors(profilePicture));
 

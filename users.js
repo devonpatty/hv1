@@ -98,6 +98,12 @@ async function createReadById(userId, bookId, star, review) {
   return result.rows;
 }
 
+async function deleteReadById(userId, bookId) {
+  const q = 'DELETE FROM readbook WHERE userId = ($1) AND bookId = ($2)';
+  const result = await query(q, [userId, bookId]);
+  return result.rows;
+}
+
 
 module.exports = {
   comparePasswords,
@@ -110,4 +116,5 @@ module.exports = {
   updateUser,
   readById,
   createReadById,
+  deleteReadById,
 };
