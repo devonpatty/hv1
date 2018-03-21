@@ -44,7 +44,7 @@ passport.use(new Strategy(jwtOptions, strat));
 app.use(passport.initialize());
 
 app.use('/', booksApi);
-app.use('/users', usersApi);
+app.use('/', usersApi);
 
 app.post('/login', async (req, res) => {
   const {
