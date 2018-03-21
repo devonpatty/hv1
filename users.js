@@ -53,11 +53,15 @@ async function findById(id) {
 async function createUser(username, password, name, url) {
   const hashedPassword = await bcrypt.hash(password, 11);
 
-  const q = 'INSERT INTO users (username, password, name, url) VALUES ($1, $2, $3, $4) RETURNING username, password';
+  const q = 'INSERT INTO users (username, password, name, url) VALUES ($1, $2, $3, $4) RETURNING username';
 
   const result = await query(q, [username, hashedPassword, name, url]);
+  const data = {
+    username: result.rows[0].username,
+    password,
+  };
 
-  return result.rows[0];
+  return data;
 }
 
 async function getUsers() {

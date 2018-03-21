@@ -36,7 +36,7 @@ async function usersId(req, res) {
 }
 
 router.post('/register', catchErrors(register));
-router.get('/', catchErrors(users));
-router.get('/:id', catchErrors(usersId));
+router.get('/users', catchErrors(users));
+router.get('/users/:id', catchErrors(usersId));
 
 module.exports = router;
