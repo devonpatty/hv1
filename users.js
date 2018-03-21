@@ -81,6 +81,24 @@ async function updateProfilePic(id, url) {
   const result = await query(q, [url, id]);
 }
 
+async function updateUser(password, name, id) {
+  const a = 'UPDATE users SET password=$1, name=$2 WHERE id=$3';
+  const result = await query(a, [password, name, id]);
+}
+
+async function readById(id) {
+  const a = 'SELECT * FROM books WHERE bookId IN (SELECT bookId FROM readbook WHERE userId = $1)';
+  const result = await query(a, [id]);
+  return result.rows;
+}
+
+async function createReadById(userId, bookId, star, review) {
+  const q = 'INSERT INTO readbook (userId, bookId, star, review) VALUES ($1, $2, $3, $4)';
+  const result = await query(q, [userId, bookId, star, review]);
+  return result.rows;
+}
+
+
 module.exports = {
   comparePasswords,
   findByUsername,
@@ -89,4 +107,7 @@ module.exports = {
   getUsers,
   getUserById,
   updateProfilePic,
+  updateUser,
+  readById,
+  createReadById,
 };
