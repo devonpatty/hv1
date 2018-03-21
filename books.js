@@ -109,7 +109,4 @@ module.exports = {
   createBook,
   getCategories,
   createCategory,
-  createUser,
-  getUsers,
-  getUserById,
 };
