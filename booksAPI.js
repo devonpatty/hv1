@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const { singleLink, manyLink } = require('./utils');
+const passport = require('passport');
 const {
   getBooks,
   searchBook,
@@ -19,6 +20,24 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
+function requireAuthentication(req, res, next) {
+  return passport.authenticate(
+    'jwt',
+    { session: false },
+    (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
+        return res.status(401).json({ error });
+      }
+
+      req.user = user;
+      next();
+    },
+  )(req, res, next);
+}
 async function books(req, res) {
   let { offset = 0, limit = 10, search } = req.query;
   offset = Number(offset);
@@ -63,6 +82,11 @@ async function booksPost(req, res) {
     pagecount,
     language,
   } = req.body;
+  if (isbn13.length !== 13) {
+    res.status(400).json({ error: 'isbn13 þarf að vera 13 stafir' });
+  } else if (title.length === 0) {
+    res.status(400).json({ error: 'title má ekki vera tómt' });
+  }
   const book = createBook(
     title,
     isbn13,
@@ -90,6 +114,11 @@ async function booksIdUpdate(req, res) {
     pagecount,
     language,
   } = req.body;
+  if (isbn13.length !== 13) {
+    res.status(400).json({ error: 'isbn13 þarf að vera 13 stafir' });
+  } else if (title.length === 0) {
+    res.status(400).json({ error: 'title má ekki vera tómt' });
+  }
   const book = await updateOne(
     id,
     title,
@@ -108,8 +137,8 @@ async function booksIdUpdate(req, res) {
 router.get('/books', catchErrors(books));
 router.get('/books/:id', catchErrors(booksId));
 router.get('/categories', catchErrors(categories));
-router.post('/categories', catchErrors(categoriesPost));
-router.post('/books', catchErrors(booksPost));
-router.patch('/books/:id', catchErrors(booksIdUpdate));
+router.post('/categories', requireAuthentication, catchErrors(categoriesPost));
+router.post('/books', requireAuthentication, catchErrors(booksPost));
+router.patch('/books/:id', requireAuthentication, catchErrors(booksIdUpdate));
 
 module.exports = router;
