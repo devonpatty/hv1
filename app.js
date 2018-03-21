@@ -67,32 +67,9 @@ app.post('/login', async (req, res) => {
   return res.status(401).json({ error: 'Invalid password' });
 });
 
-function requireAuthentication(req, res, next) {
-  return passport.authenticate(
-    'jwt',
-    { session: false },
-    (err, user, info) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
-        return res.status(401).json({ error });
-      }
-
-      req.user = user;
-      next();
-    },
-  )(req, res, next);
-}
-
 app.use('/', booksApi);
-app.use('/', requireAuthentication, usersApi);
+app.use('/', usersApi);
 app.use('/csv', codata);
-
-app.get('/admin', requireAuthentication, (req, res) => {
-  res.json({ data: 'top secret' });
-});
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).json({ error: 'Not found' });
