@@ -112,9 +112,9 @@ async function meReadPost(req, res) {
 }
 
 async function deleteRead(req, res) {
-  const { bookId } = req.params;
-  const { userId } = req.user;
-  const results = await deleteReadById(userId, bookId);
+  const { id } = req.params;
+  const userId = req.user.id;
+  const results = await deleteReadById(userId, id);
   res.status(200).json(results);
 }
 
