@@ -14,6 +14,10 @@ const {
   deleteReadById,
 } = require('./users');
 
+const {
+  readOne,
+} = require('./books');
+
 const uploads = multer({ dest: './temp' });
 const {
   CLOUDINARY_CLOUD,
@@ -74,13 +78,21 @@ async function profilePicture(req, res, next) {
 
 async function users(req, res) {
   const results = await getUsers();
-  res.status(200).json(results);
+  if(results.length===0) {
+    res.status(400).json({ error: 'Engir skráðir notendur'});
+  } else {
+    res.status(200).json(results);
+  }
 }
 
 async function usersId(req, res) {
   const { id } = req.params;
   const results = await getUserById(id);
-  res.status(200).json(results);
+  if(results.length === 0) {
+    res.status(400).json({ error: 'Enginn user með þetta ID'});
+  } else {
+    res.status(200).json(results);
+  }
 }
 
 async function userMe(req, res) {
@@ -92,15 +104,22 @@ async function userMe(req, res) {
 async function updateMe(req, res) {
   const { id } = req.user;
   const { password, name } = req.body;
-  const results = await updateUser(password, name, id);
-  res.status(200).json(results);
+  if(password.length < 6) {
+    res.status(400).json({ error: 'Password þarf að vera 6 stafir eða lengra'});
+  } else if(!name) {
+    res.status(400).json({ error: 'Name má ekki vera null'});
+  } else {
+    const results = await updateUser(password, name, id);
+    res.status(200).json(results);
+  }
 }
 
 async function readIdGet(req, res) {
-  console.log('123');
   const { id } = req.params;
   const results = await readById(id);
-  console.log(results);
+  if(results.length === 0) {
+    res.status(400).json({ error: 'Þessi notandi hefur ekki lesið neina bækur'});
+  }
   res.status(200).json(results);
 }
 
@@ -113,13 +132,21 @@ async function meRead(req, res) {
 async function meReadPost(req, res) {
   const { id } = req.user;
   const { bookId, star, review } = req.body;
-  const results = await createReadById(id, bookId, star, review);
-  res.status(200).json(results);
+  const book = await readOne(bookId);
+  if (book.length === 0) {
+    res.status(400).json({ error: 'Engin bók með þetta ID'});
+  } else if (star <1 || star > 5) {
+    res.status(400).json({ error: 'Stjörnur þurfa að vera á milli 1 og 5'});
+  } else {
+    const results = await createReadById(id, bookId, star, review);
+    res.status(200).json({Skráning: 'Skráning tókst'});
+  }
 }
 
 async function deleteRead(req, res) {
   const { id } = req.params;
   const userId = req.user.id;
+
   const results = await deleteReadById(userId, id);
   res.status(200).json(results);
 }
