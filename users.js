@@ -76,6 +76,11 @@ async function getUserById(id) {
   return results.rows;
 }
 
+async function updateProfilePic(id, url) {
+  const q = 'UPDATE users SET url=$1 WHERE id=$2';
+  const result = await query(q, [url, id]);
+}
+
 module.exports = {
   comparePasswords,
   findByUsername,
@@ -83,4 +88,5 @@ module.exports = {
   createUser,
   getUsers,
   getUserById,
+  updateProfilePic,
 };
