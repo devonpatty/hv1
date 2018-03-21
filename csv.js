@@ -5,7 +5,7 @@ const csvdata = require('csvdata');
 const {
   insertCategory,
   insertBooks,
-} = require('./helper');
+} = require('./books');
 
 const booksPath = './data/books.csv';
 const router = express.Router();
