@@ -81,6 +81,24 @@ async function createCategory(name) {
   return result.rows;
 }
 
+async function createUser(username, password, name) {
+  const a = 'INSERT INTO users(username, password, name) VALUES($1, $2, $3) RETURNING username';
+  const result = await query(a, [username, password, name]);
+  return result.rows;
+}
+
+async function getUsers() {
+  const a = 'SELECT username FROM users';
+  const results = await query(a);
+  return results.rows;
+}
+
+async function getUserById(id) {
+  const a = 'SELECT username FROM users WHERE id = ($1)';
+  const results = await query(a, [id]);
+  return results.rows;
+}
+
 module.exports = {
   getBooks,
   insertCategory,
