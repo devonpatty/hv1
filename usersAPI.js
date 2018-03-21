@@ -43,8 +43,14 @@ async function register(req, res) {
     password,
     name,
   } = req.body;
-  const results = await createUser(username, password, name);
-  res.status(200).json(results);
+  if(username.length < 3) {
+    res.status(400).json({ error: 'Username þarf að vera 3 stafir eða lengra'});
+  } else if(password.length <6) {
+    res.status(400).json({ error: 'Password þarf að vera 6 stafir eða lengra'});
+  } else {
+    const results = await createUser(username, password, name);
+    res.status(200).json(results);
+  }
 }
 
 async function profilePicture(req, res, next) {
