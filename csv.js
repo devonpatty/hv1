@@ -39,6 +39,6 @@ async function csv(req, res) {
     });
 }
 
-router.get('/csv', catchErrors(csv));
+router.get('/', catchErrors(csv));
 
 module.exports = router;
