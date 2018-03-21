@@ -1,21 +1,22 @@
 require('dotenv').config();
-const express = require('express');
-const book = require('./book.js');
 
+const express = require('express');
 const passport = require('passport');
-const { Strategy, ExtractJwt } = require('passport-jwt');
 const jwt = require('jsonwebtoken');
+const { Strategy, ExtractJwt } = require('passport-jwt');
+
+const booksApi = require('./booksAPI');
+const usersApi = require('./usersAPI');
 const users = require('./users');
 
-const tokenLifetime = 20000;
-
-const app = express();
-
+const tokenLifetime = 1000;
 const {
   PORT: port = 3000,
   HOST: host = '127.0.0.1',
   JWT_SECRET: jwtSecret,
 } = process.env;
+
+const app = express();
 
 if (!jwtSecret) {
   console.error('JWT_SECRET not registered in .env');
@@ -42,7 +43,8 @@ passport.use(new Strategy(jwtOptions, strat));
 
 app.use(passport.initialize());
 
-app.use('/', book);
+app.use('/', booksApi);
+app.use('/users', usersApi);
 
 app.post('/login', async (req, res) => {
   const {
@@ -61,7 +63,7 @@ app.post('/login', async (req, res) => {
     const payload = { id: user.id };
     const tokenOptions = { expiresIn: tokenLifetime };
     const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
-    return res.json({ token, user });
+    return res.json({ token });
   }
 
   return res.status(401).json({ error: 'Invalid password' });
@@ -75,7 +77,6 @@ function requireAuthentication(req, res, next) {
       if (err) {
         return next(err);
       }
-      console.info(user);
       if (!user) {
         const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
         return res.status(401).json({ error });
@@ -88,8 +89,7 @@ function requireAuthentication(req, res, next) {
 }
 
 app.get('/admin', requireAuthentication, (req, res) => {
-  const { user } = req.user;
-  res.json({ data: 'top secret', user });
+  res.json({ data: 'top secret' });
 });
 
 function notFoundHandler(req, res, next) { // eslint-disable-line

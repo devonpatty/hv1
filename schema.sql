@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    userId          serial primary key,
+    id          serial primary key,
     username        varchar(65) CHECK (char_length(username) >= 3) UNIQUE NOT NULL,
     password        varchar(255) CHECK (char_length(password) >= 6) NOT NULL,
     name            varchar(65) NOT NULL,
