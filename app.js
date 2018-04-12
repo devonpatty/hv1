@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const { Strategy, ExtractJwt } = require('passport-jwt');
 
 const booksApi = require('./booksAPI');
@@ -18,15 +19,7 @@ const {
 } = process.env;
 
 const app = express();
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, PUT, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  if (req.method === 'OPTIONS') {
-    res.status(200);
-  }
-  next();
-});
+app.use(cors());
 
 if (!jwtSecret) {
   console.error('JWT_SECRET not registered in .env');
