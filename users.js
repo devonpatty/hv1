@@ -82,8 +82,10 @@ async function updateProfilePic(id, url) {
 }
 
 async function updateUser(password, name, id) {
+  const hashedPassword = await bcrypt.hash(password, 11);
+  console.log(hashedPassword);
   const a = 'UPDATE users SET password=$1, name=$2 WHERE id=$3';
-  const result = await query(a, [password, name, id]);
+  const result = await query(a, [hashedPassword, name, id]);
 }
 
 async function readById(id) {
