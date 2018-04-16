@@ -13,6 +13,7 @@ const {
   readById,
   createReadById,
   deleteReadById,
+  findById,
 } = require('./users');
 
 const {
@@ -117,7 +118,7 @@ async function usersId(req, res) {
 
 async function userMe(req, res) {
   const { id } = req.user;
-  const results = await getUserById(id);
+  const results = await findById(id);
   res.status(200).json(results);
 }
 
