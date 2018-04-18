@@ -89,7 +89,7 @@ async function updateUser(password, name, id) {
 }
 
 async function readById(id) {
-  const a = 'SELECT * FROM books WHERE bookId IN (SELECT bookId FROM readbook WHERE userId = $1)';
+  const a = 'SELECT title, star, review FROM readbook LEFT JOIN books ON readbook.bookId = books.bookId WHERE userId = $1';
   const result = await query(a, [id]);
   return result.rows;
 }
