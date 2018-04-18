@@ -103,7 +103,10 @@ async function createReadById(userId, bookId, star, review) {
 async function deleteReadById(userId, bookId) {
   const q = 'DELETE FROM readbook WHERE userId = ($1) AND bookId = ($2)';
   const result = await query(q, [userId, bookId]);
-  return result.rows;
+  if (result.rowCount === 1) {
+    return {};
+  }
+  return { error: 'no entry has been found' };
 }
 
 
