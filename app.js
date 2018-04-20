@@ -11,7 +11,7 @@ const usersApi = require('./usersAPI');
 const users = require('./users');
 const codata = require('./csv');
 
-const tokenLifetime = 100;
+const tokenLifetime = 1000;
 const {
   PORT: port = 3000,
   HOST: host = '127.0.0.1',
