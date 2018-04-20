@@ -81,11 +81,16 @@ async function updateProfilePic(id, url) {
   const result = await query(q, [url, id]);
 }
 
-async function updateUser(password, name, id) {
+async function updateUserPass(password, id) {
   const hashedPassword = await bcrypt.hash(password, 11);
-  console.log(hashedPassword);
-  const a = 'UPDATE users SET password=$1, name=$2 WHERE id=$3';
-  const result = await query(a, [hashedPassword, name, id]);
+
+  const a = 'UPDATE users SET password=$1 WHERE id=$2';
+  const result = await query(a, [hashedPassword, id]);
+}
+
+async function updateUsername(name, id) {
+  const a = 'UPDATE users SET name=$1 WHERE id=$2';
+  const result = await query(a, [name, id]);
 }
 
 async function readById(id) {
@@ -118,7 +123,8 @@ module.exports = {
   getUsers,
   getUserById,
   updateProfilePic,
-  updateUser,
+  updateUserPass,
+  updateUsername,
   readById,
   createReadById,
   deleteReadById,

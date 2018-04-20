@@ -9,7 +9,8 @@ const {
   getUsers,
   getUserById,
   updateProfilePic,
-  updateUser,
+  updateUserPass,
+  updateUsername,
   readById,
   createReadById,
   deleteReadById,
@@ -125,13 +126,21 @@ async function userMe(req, res) {
 async function updateMe(req, res) {
   const { id } = req.user;
   const { password, name } = req.body;
-  if (password.length < 6) {
-    res.status(400).json({ error: 'Password þarf að vera 6 stafir eða lengra'});
-  } else if (!name) {
-    res.status(400).json({ error: 'Name má ekki vera null'});
-  } else {
-    const results = await updateUser(password, name, id);
-    res.status(200).json(results);
+  if (password) {
+    if (password.length < 6) {
+      res.status(400).json({ error: 'Password þarf að vera 6 stafir eða lengra' });
+    } else {
+      const pass = await updateUserPass(password, id);
+      res.status(200).json(pass);
+    }
+  }
+  if (name) {
+    if (name.length === '') {
+      res.status(400).json({ error: 'Name má ekki vera null'});
+    } else {
+      const username = await updateUsername(name, id);
+      res.status(200).json(username);
+    }
   }
 }
 
