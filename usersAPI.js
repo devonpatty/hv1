@@ -136,7 +136,7 @@ async function updateMe(req, res) {
   }
   if (name) {
     if (name.length === '') {
-      res.status(400).json({ error: 'Name má ekki vera null'});
+      res.status(400).json({ error: 'Name má ekki vera null' });
     } else {
       const username = await updateUsername(name, id);
       res.status(200).json(username);

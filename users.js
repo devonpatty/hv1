@@ -53,12 +53,13 @@ async function findById(id) {
 async function createUser(username, password, name, url) {
   const hashedPassword = await bcrypt.hash(password, 11);
 
-  const q = 'INSERT INTO users (username, password, name, url) VALUES ($1, $2, $3, $4) RETURNING username';
+  const q = 'INSERT INTO users (username, password, name, url) VALUES ($1, $2, $3, $4) RETURNING username, name';
 
   const result = await query(q, [username, hashedPassword, name, url]);
   const data = {
     username: result.rows[0].username,
     password,
+    name,
   };
 
   return data;
@@ -89,8 +90,9 @@ async function updateUserPass(password, id) {
 }
 
 async function updateUsername(name, id) {
-  const a = 'UPDATE users SET name=$1 WHERE id=$2';
+  const a = 'UPDATE users SET name=$1 WHERE id=$2 RETURNING name';
   const result = await query(a, [name, id]);
+  return result.rows[0];
 }
 
 async function readById(id) {
