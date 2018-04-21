@@ -148,7 +148,7 @@ async function readIdGet(req, res) {
   const { id } = req.params;
   const results = await readById(id);
   if (results.length === 0) {
-    res.status(400).json({ error: 'Þessi notandi hefur ekki lesið neina bækur'});
+    res.status(200).json({ error: 'Þessi notandi hefur ekki lesið neina bækur'});
   }
   res.status(200).json(results);
 }
