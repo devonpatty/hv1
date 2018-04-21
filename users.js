@@ -66,7 +66,7 @@ async function createUser(username, password, name, url) {
 }
 
 async function getUsers() {
-  const a = 'SELECT username FROM users';
+  const a = 'SELECT username, id FROM users';
   const results = await query(a);
   return results.rows;
 }
